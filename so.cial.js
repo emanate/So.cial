@@ -8,7 +8,7 @@ var so = {
         var context = this;
         this.server_flow = (typeof options.server_flow !== "undefined") ? options.server_flow : false;
         this.appId = (typeof options.appId !== "undefined") ? options.appId : false;
-        this.redirect_uri = (typeof options.redirect_uri !== "undefined") ? options.redirect_uri : false;
+        this.redirectUri = (typeof options.redirectUri !== "undefined") ? options.redirectUri : false;
 
         window.fbAsyncInit = function() {
 
@@ -38,23 +38,6 @@ var so = {
 
     },
 
-    connectInstagram:function(){
-
-        var client_id = (typeof arguments[0] !== "undefined") ? arguments[0] : false;
-        var redirect_uri = (typeof arguments[1] !== "undefined") ? arguments[1] : false;
-        
-        var myWindow = this.postInWindow(this.strings.instagram_url+"?client_id="+client_id+"&redirect_uri="+redirect_uri+"&response_type=code");
-        
-        var counter = 0;
-
-        var looper = setInterval(function(){
-            counter++;
-            listenInstagram(JSON.parse(Cookies.get("instagram_callback")));
-            if (counter >= 100) clearInterval(looper);
-        },1000);
-        
-    },
-
     autoSize:function(){
         var auto = (typeof arguments[0] !== "undefined") ? arguments[0] : true;
         var time = (typeof arguments[1] !== "undefined") ? arguments[1] : 500;
@@ -77,7 +60,7 @@ var so = {
         var callback = (typeof arguments[0] !== "function") ? false : arguments[0];
         var context = this;
 
-        if(this.redirect_uri && askForLogin)
+        if(this.redirectUri && askForLogin)
         {
             this.serverLogin();
         }else {
@@ -127,8 +110,8 @@ var so = {
 
     serverLogin: function()
     {
-        if(!this.appID || !this.redirect_uri) return false;
-        window.open(this.strings.facebook_server_flow_url+"?client_id="+this.appId+"&redirect_uri="+this.redirect_uri+fr+"&scope="+this.permissions,"_self");
+        if(!this.appID || !this.redirectUri) return false;
+        window.open(this.strings.facebook_server_flow_url+"?client_id="+this.appId+"&redirectUri="+this.redirectUri+fr+"&scope="+this.permissions,"_self");
     },
 
     inviteFriends:function()
@@ -212,8 +195,12 @@ var so = {
 
     twitterShare: function()
     {
-        var object = (typeof arguments[0] === "object") ? arguments[0] : false;
-        if(object) this.postInWindow(this.strings.twitter_url+"?text="+encodeURIComponent(object.description)+"&url="+(object.url || object.link));
+        var object = (typeof arguments[0] === "object") ? {
+            link    : (typeof arguments[0].link !== "undefined") ? arguments[0].link : "",
+            description    : (typeof arguments[0].description !== "undefined") ? arguments[0].description : ""
+        } : false;
+
+        if(object) this.postInWindow(this.strings.twitter_url+"?text="+encodeURIComponent(object.description)+"&url="+(object.link));
     },
 
     facebookShare: function()
@@ -225,7 +212,7 @@ var so = {
             method: 'feed',
             link: (typeof object.link !== "undefined") ? object.link : "",
             picture: (typeof object.picture !== "undefined") ? object.picture : "",
-            name: (typeof object.name !== "undefined") ? object.name : "",
+            name: (typeof object.title !== "undefined") ? object.title : "",
             caption: (typeof object.caption !== "undefined") ? object.caption : "",
             description: object.description
         };
@@ -246,7 +233,7 @@ var so = {
 
     appId           : false,
 
-    redirect_uri    : false,
+    redirectUri    : false,
 
     server_flow     : false,
 
